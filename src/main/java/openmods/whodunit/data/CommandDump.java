@@ -19,7 +19,7 @@ import com.google.common.collect.*;
 
 public class CommandDump implements ICommand {
 
-    private static final String COMMAND_NAME = "call_tracer";
+    private static final String COMMAND_NAME = "call_tracking";
 
     private static final String COMMAND_DUMP = "dump";
 

@@ -1,0 +1,11 @@
+{
+    "methods" : {
+        "chunk_load" : {
+            "cls" : "net.minecraft.world.chunk.storage.AnvilChunkLoader",
+            "argTypes" : ["Lnet/minecraft/world/World;", "I", "I"],
+            "returnType" : "Lnet/minecraft/world/chunk/Chunk;",
+            "mcpName" : "loadChunk",
+            "srgName" : "func_75815_a"
+        }
+    }
+}

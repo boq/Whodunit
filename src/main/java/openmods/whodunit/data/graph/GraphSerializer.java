@@ -1,6 +1,8 @@
 package openmods.whodunit.data.graph;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 import openmods.whodunit.data.CallCounter;
 
@@ -25,8 +27,10 @@ public class GraphSerializer {
         return result;
     }
 
-    public void serialize(Collection<StackTraceElement> roots, Map<StackTraceElement, CallCounter> data, GraphVisitor visitor) {
-        Queue<StackTraceElement> todo = Lists.newLinkedList(roots);
+    public void serialize(StackTraceElement root, Map<StackTraceElement, CallCounter> data, GraphVisitor visitor) {
+        Queue<StackTraceElement> todo = Lists.newLinkedList();
+        todo.add(root);
+        boolean isRoot = true;
 
         StackTraceElement callee;
         while ((callee = todo.poll()) != null) {
@@ -36,7 +40,8 @@ public class GraphSerializer {
             final CallCounter counter = data.get(callee);
             final int calleeId = getIdForVertex(callee);
 
-            visitor.visitVertex(calleeId, callee);
+            visitor.visitVertex(calleeId, callee, isRoot);
+            isRoot = false;
 
             for (Multiset.Entry<StackTraceElement> callerCount : counter.callers.entrySet()) {
                 final StackTraceElement caller = callerCount.getElement();

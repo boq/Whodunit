@@ -13,6 +13,8 @@ import com.google.common.collect.*;
 
 public class CallCollector {
 
+    private static final int STACK_TRACE_START = 1;
+
     public static final BlockingQueue<CallMarker> CALLS = Queues.newLinkedBlockingDeque();
 
     private static final Worker WORKER = new Worker();
@@ -65,16 +67,16 @@ public class CallCollector {
         private synchronized void processCall(CallMarker marker) {
             StackTraceElement[] stacktrace = marker.getStackTrace();
 
-            if (stacktrace.length < 3)
+            if (stacktrace.length < 2)
                 return;
 
-            StackTraceElement root = stacktrace[2];
+            StackTraceElement root = stacktrace[STACK_TRACE_START];
 
             locationRoots.put(marker.location, root);
 
             CallCounter counter = getCounter(root);
 
-            for (int i = 3; i < stacktrace.length; i++) {
+            for (int i = STACK_TRACE_START + 1; i < stacktrace.length; i++) {
                 StackTraceElement el = stacktrace[i];
                 counter.addCaller(el);
                 counter = getCounter(el);
@@ -83,7 +85,9 @@ public class CallCollector {
 
         public synchronized void visitData(int locationId, GraphSerializer serializer, GraphVisitor visitor) {
             Collection<StackTraceElement> roots = locationRoots.get(locationId);
-            serializer.serialize(roots, callMap, visitor);
+
+            for (StackTraceElement root : roots)
+                serializer.serialize(root, callMap, visitor);
         }
 
         @Override

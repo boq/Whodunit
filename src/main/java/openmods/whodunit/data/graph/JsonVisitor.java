@@ -22,8 +22,10 @@ public class JsonVisitor extends PrintWriterVisitor {
     }
 
     @Override
-    public void visitVertex(int index, StackTraceElement value) {
+    public void visitVertex(int index, StackTraceElement value, boolean isRoot) {
         JsonObject vertex = gson.toJsonTree(value).getAsJsonObject();
+        if (isRoot)
+            vertex.addProperty("root", true);
         vertices.add(Integer.toString(index), vertex);
     }
 
@@ -32,7 +34,7 @@ public class JsonVisitor extends PrintWriterVisitor {
         JsonObject edge = new JsonObject();
         edge.addProperty("from", from);
         edge.addProperty("to", to);
-        edge.addProperty("weigth", weight);
+        edge.addProperty("weight", weight);
         edges.add(edge);
     }
 
